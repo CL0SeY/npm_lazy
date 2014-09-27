@@ -67,7 +67,11 @@ function start(config) {
   var server = http.createServer();
 
   server.on('request', function(req, res) {
-    if (!api.route(req, res)) {
+    if (req.url.lastIndexOf(config.externalUrl, 0) !== 0) {
+      log.error('External request', req.url);
+      Package.proxyExternal(req, res);
+    }
+    else if (!api.route(req, res)) {
       log.error('No route found', req.url);
       Package.proxy(req, res);
     }
